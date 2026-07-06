@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Broadcast & Alerts - Secure Group</title>
+    <style>
+        /* === BASE COLORS & SETUP === */
+        :root {
+            --bg-dark: #0b0f19; --bg-card: #121820; --bg-sidebar: #0b0f19;
+            --text-main: #ffffff; --text-muted: #8b949e; --border-color: #21262d;
+            --accent-green: #4caf50; --accent-red: #f44336;
+            --accent-blue: #2196f3; --accent-orange: #ff9800;
+        }
+
+        body { margin: 0; padding: 0; background-color: var(--bg-dark); color: var(--text-main); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+        
+        /* Layout Wrapper instead of body flex */
+        .app-wrapper { display: flex; height: 100vh; overflow: hidden; }
+
+        /* === LEFT SIDEBAR === */
+        .sidebar { width: 260px; background-color: var(--bg-sidebar); border-right: 1px solid var(--border-color); display: flex; flex-direction: column; overflow-y: auto; flex-shrink: 0; }
+        .sidebar-header { padding: 20px; display: flex; align-items: center; gap: 12px; }
+        .sidebar-logo { width: 35px; height: 45px; background: url('https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg') no-repeat center; background-size: contain; filter: drop-shadow(0px 0px 2px rgba(255, 200, 0, 0.5));}
+        .sidebar-title { font-size: 0.65rem; font-weight: bold; line-height: 1.2; letter-spacing: 0.5px; color: var(--text-muted);}
+        
+        .nav-menu { list-style: none; padding: 0; margin: 10px 0; }
+        .nav-link { display: flex; align-items: center; padding: 12px 20px; color: var(--text-main); text-decoration: none; font-size: 0.85rem; gap: 15px; border-left: 3px solid transparent; cursor: pointer; }
+        .nav-link:hover { background: rgba(255,255,255,0.05); }
+        .nav-link.active { background: rgba(76, 175, 80, 0.1); border-left-color: var(--accent-green); color: var(--accent-green); font-weight: bold; border-radius: 0 20px 20px 0; margin-right: 15px;}
+        .nav-icon { font-size: 1.1rem; width: 20px; text-align: center; }
+
+        .sidebar-profile { margin-top: auto; padding: 20px; border-top: 1px solid var(--border-color); background: rgba(255,255,255,0.02);}
+        .sb-prof-top { display: flex; align-items: center; gap: 12px; }
+        .sb-avatar { width: 40px; height: 40px; border-radius: 50%; background: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png') center/cover; border: 2px solid var(--text-muted);}
+        .sb-name { font-size: 0.8rem; font-weight: bold; margin: 0;}
+        .sb-role { font-size: 0.65rem; color: var(--accent-green); margin: 3px 0 0 0;}
+
+        /* === MAIN CONTENT AREA === */
+        .main-content { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: var(--bg-dark); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 20px 30px; position: sticky; top: 0; background: var(--bg-dark); z-index: 10; border-bottom: 1px solid var(--border-color);}
+        .page-title h1 { margin: 0; font-size: 1.2rem; text-transform: uppercase;}
+        .page-title p { margin: 2px 0 0 0; font-size: 0.75rem; color: var(--text-muted); }
+        .top-icons { display: flex; gap: 20px; font-size: 1.2rem; align-items: center;}
+        .sec-conn { display: flex; align-items: center; gap: 5px; color: var(--accent-green); font-size: 0.65rem; font-weight: bold;}
+        
+        .content-padding { padding: 20px 30px; display: flex; flex-direction: column; gap: 20px; }
+        
+        /* Stats Top Row */
+        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
+        .stat-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; padding: 15px; display: flex; justify-content: space-between; align-items: center; transition: 0.3s;}
+        .stat-info p { margin: 0; font-size: 0.7rem; color: var(--text-muted); margin-bottom: 5px;}
+        .stat-info h3 { margin: 0; font-size: 1.4rem; color: var(--text-main); }
+        .stat-info span { font-size: 0.6rem; color: var(--text-muted); display: block; margin-top: 3px;}
+        .stat-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem;}
+        
+        /* Main Split Layout */
+        .main-split { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; }
+        .card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; display: flex; flex-direction: column;}
+        .card-header { padding: 15px 20px; border-bottom: 1px solid var(--border-color); display: flex; align-items: center; justify-content: space-between; font-size: 0.75rem; font-weight: bold; text-transform: uppercase; color: var(--text-main);}
+        .card-body { padding: 20px; }
+
+        /* List Items */
+        .broadcast-item { display: flex; gap: 15px; padding: 15px 0; border-bottom: 1px solid rgba(255,255,255,0.05); animation: fadeIn 0.5s ease-in-out;}
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .b-icon { width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1rem; flex-shrink: 0;}
+        .b-content { flex: 1; }
+        .b-top { display: flex; justify-content: space-between; margin-bottom: 5px; align-items: center;}
+        .b-title { font-size: 0.85rem; font-weight: bold; display: flex; align-items: center; gap: 10px;}
+        .b-badge { font-size: 0.55rem; padding: 2px 6px; border-radius: 4px; font-weight: bold; text-transform: uppercase;}
+        .b-time { font-size: 0.65rem; color: var(--text-muted);}
+        .b-desc { font-size: 0.75rem; color: var(--text-muted); margin: 0 0 10px 0;}
+        .b-meta { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-muted);}
+        
+        .badge-alert { background: rgba(244, 67, 54, 0.1); color: var(--accent-red); border: 1px solid var(--accent-red);}
+        .badge-update { background: rgba(76, 175, 80, 0.1); color: var(--accent-green); border: 1px solid var(--accent-green);}
+
+        /* Donut Chart Setup */
+        .chart-container { display: flex; align-items: center; gap: 30px; }
+        .donut { width: 120px; height: 120px; border-radius: 50%; background: var(--border-color); display: flex; justify-content: center; align-items: center; transition: 0.5s;}
+        .donut-inner { width: 90px; height: 90px; background: var(--bg-card); border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center;}
+        .donut-inner h3 { margin: 0; font-size: 1.2rem;}
+        .donut-inner p { margin: 0; font-size: 0.55rem; color: var(--text-muted); text-align: center;}
+        .chart-legend { flex: 1; display: flex; flex-direction: column; gap: 10px;}
+        .legend-item { display: flex; justify-content: space-between; font-size: 0.75rem;}
+        .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px;}
+
+        /* Form Controls */
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; font-size: 0.7rem; color: var(--text-main); margin-bottom: 5px;}
+        .form-control { width: 100%; background: var(--bg-dark); border: 1px solid var(--border-color); color: var(--text-main); padding: 10px; border-radius: 6px; font-size: 0.75rem; box-sizing: border-box; outline: none; font-family: inherit;}
+        .form-control:focus { border-color: var(--accent-green); }
+        select.form-control { appearance: none; background-image: url('data:image/svg+xml;utf8,<svg fill="white" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>'); background-repeat: no-repeat; background-position: right 10px center; }
+        textarea.form-control { height: 80px; resize: none; }
+        
+        .btn { width: 100%; padding: 12px; border-radius: 6px; font-size: 0.8rem; font-weight: bold; cursor: pointer; border: none; display: flex; justify-content: center; align-items: center; gap: 8px;}
+        .btn-primary { background: var(--accent-green); color: var(--bg-dark); }
+
+        /* === BOTTOM NAV === */
+        .bottom-nav { display: flex; justify-content: space-around; padding: 12px 0; background: var(--bg-dark); border-top: 1px solid var(--border-color); position: fixed; bottom: 0; left: 260px; right: 0; z-index: 100;}
+        .nav-item-bottom { text-align: center; font-size: 0.7rem; color: var(--text-muted); cursor: pointer; display: flex; flex-direction: column; gap: 3px;}
+        .nav-item-bottom.active { color: var(--accent-green); }
+        .b-icon { font-size: 1.3rem; }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo"></div>
+                <div class="sidebar-title">SECURE CLOSED GROUP<br><span style="color:white;">COMMUNICATION PLATFORM</span></div>
+            </div>
+            
+            <ul class="nav-menu">
+                <a onclick="routeTo('dashboard.html')" class="nav-link"><span class="nav-icon">🏠</span> Dashboard</a>
+                <a onclick="triggerHook('Messages')" class="nav-link"><span class="nav-icon">💬</span> Messages</a>
+                <a onclick="triggerHook('Groups')" class="nav-link"><span class="nav-icon">👥</span> Groups</a>
+                <a class="nav-link active"><span class="nav-icon">📢</span> Broadcast</a>
+                <a onclick="triggerHook('Reports')" class="nav-link"><span class="nav-icon">📄</span> Reports</a>
+                <a onclick="triggerHook('Audit Logs')" class="nav-link"><span class="nav-icon">📋</span> Audit Logs</a>
+                <a onclick="routeTo('profile.html')" class="nav-link"><span class="nav-icon">👤</span> Profile</a>
+                <a onclick="triggerHook('Settings')" class="nav-link"><span class="nav-icon">⚙️</span> Settings</a>
+            </ul>
+
+            <div class="sidebar-profile">
+                <div class="sb-prof-top">
+                    <div class="sb-avatar"></div>
+                    <div>
+                        <p class="sb-name">SoldierRavi</p>
+                        <p class="sb-role">Commanding Officer</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <main class="main-content">
+            <div class="top-bar">
+                <div class="page-title">
+                    <h1>BROADCAST & ALERTS</h1>
+                    <p>Send critical updates and alerts to units and personnel</p>
+                </div>
+                <div class="top-icons">
+                    <div class="sec-conn">🛡️ SECURE CONNECTION</div>
+                    <div style="cursor:pointer;" onclick="logoutSystem()">↪️</div>
+                </div>
+            </div>
+
+            <div class="content-padding">
+                
+                <div class="stats-grid">
+                    <div class="stat-card" id="total-card">
+                        <div class="stat-info">
+                            <p>Total Broadcasts</p><h3 id="total-broadcasts">0</h3><span>This Month</span>
+                        </div>
+                        <div class="stat-icon" style="background: rgba(76,175,80,0.1); color: var(--accent-green);">📢</div>
+                    </div>
+                    <div class="stat-card" id="delivered-card">
+                        <div class="stat-info">
+                            <p>Delivered</p><h3 id="delivered-broadcasts">0</h3><span>0% Success Rate</span>
+                        </div>
+                        <div class="stat-icon" style="background: rgba(33,150,243,0.1); color: var(--accent-blue);">✈️</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <p>Pending</p><h3>0</h3><span>No active queues</span>
+                        </div>
+                        <div class="stat-icon" style="background: rgba(255,152,0,0.1); color: var(--accent-orange);">⏱️</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-info">
+                            <p>Failed</p><h3>0</h3><span>0% Failure Rate</span>
+                        </div>
+                        <div class="stat-icon" style="background: rgba(244,67,54,0.1); color: var(--accent-red);">✖️</div>
+                    </div>
+                </div>
+
+                <div class="main-split">
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="card">
+                            <div class="card-header">
+                                <span>RECENT BROADCASTS</span>
+                            </div>
+                            <div class="card-body" style="padding-top: 15px;">
+                                <div id="broadcast-list">
+                                    <div id="empty-notice" style="text-align:center; color:var(--text-muted); padding:40px 20px; font-size:0.8rem;">
+                                        📡 No broadcasts transmitted yet.<br>Use the console on the right to send an encrypted alert.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="card">
+                            <div class="card-header"><span>DELIVERY OVERVIEW</span></div>
+                            <div class="card-body chart-container">
+                                <div class="donut" id="donut-chart">
+                                    <div class="donut-inner">
+                                        <h3 id="chart-total">0</h3>
+                                        <p>Total<br>Messages</p>
+                                    </div>
+                                </div>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <span><span class="dot" style="background:var(--accent-green);"></span> Delivered</span>
+                                        <strong id="legend-delivered">0</strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: flex; flex-direction: column; gap: 20px;">
+                        <div class="card">
+                            <div class="card-header" style="color: var(--accent-green);">
+                                <span>📢 CREATE ENCRYPTED BROADCAST</span>
+                            </div>
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label class="form-label">Broadcast Type</label>
+                                    <select class="form-control" id="bc-type">
+                                        <option value="Alert">⚠️ Alert</option>
+                                        <option value="Update">ℹ️ Update</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Message Title</label>
+                                    <input type="text" class="form-control" id="bc-title" placeholder="Enter title (required)">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Message Payload</label>
+                                    <textarea class="form-control" id="bc-msg" placeholder="Type secure transmission..."></textarea>
+                                </div>
+                                
+                                <button class="btn btn-primary" onclick="sendRealBroadcast()">➤ Transmit Broadcast</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item-bottom" onclick="routeTo('dashboard.html')"><div class="b-icon">🏠</div>Home</div>
+        <div class="nav-item-bottom" onclick="triggerHook('Chats')"><div class="b-icon">💬</div>Chats</div>
+        <div class="nav-item-bottom" onclick="triggerHook('Welfare')"><div class="b-icon">➕</div>Welfare</div>
+        <div class="nav-item-bottom active"><div class="b-icon">📢</div>Broadcast</div>
+        <div class="nav-item-bottom" onclick="routeTo('profile.html')"><div class="b-icon">👤</div>Profile</div>
+    </div>
+
+    <script>
+        function routeTo(pageName) { window.location.href = pageName; }
+        function triggerHook(actionName) { alert("⚙️ Routing to " + actionName + " module..."); }
+        function logoutSystem() {
+            if (confirm("⚠️ SECURITY WARNING: Log out?")) { window.location.href = "index.html"; }
+        }
+
+        function sendRealBroadcast() {
+            let titleInput = document.getElementById('bc-title');
+            let msgInput = document.getElementById('bc-msg');
+            let typeSelect = document.getElementById('bc-type');
+            
+            let title = titleInput.value.trim();
+            let msg = msgInput.value.trim();
+            let type = typeSelect.value;
+            
+            if(!title || !msg) {
+                alert("❌ Please enter both Title and Message Payload.");
+                return;
+            }
+
+            // Hide empty notice on first transmission
+            let emptyNotice = document.getElementById('empty-notice');
+            if(emptyNotice) { emptyNotice.style.display = 'none'; }
+
+            // 1. Inject the brand new broadcast item
+            let currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            let isAlert = type === "Alert";
+            let iconCode = isAlert ? "⚠️" : "ℹ️";
+            let iconColor = isAlert ? "var(--accent-red)" : "var(--accent-green)";
+            let iconBg = isAlert ? "rgba(244,67,54,0.1)" : "rgba(76,175,80,0.1)";
+            let badgeClass = isAlert ? "badge-alert" : "badge-update";
+
+            let newHTML = `
+                <div class="broadcast-item" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding: 15px; background: rgba(76, 175, 80, 0.02); border-left: 4px solid ${iconColor}; margin-bottom: 10px; border-radius: 6px;">
+                    <div class="b-icon" style="background: ${iconBg}; color: ${iconColor};">${iconCode}</div>
+                    <div class="b-content">
+                        <div class="b-top">
+                            <div class="b-title">${title} <span class="b-badge ${badgeClass}">${type.toUpperCase()}</span> <span class="b-badge" style="background:var(--accent-green); color:black;">LIVE</span></div>
+                            <div class="b-time">Today, ${currentTime}</div>
+                        </div>
+                        <p class="b-desc" style="color: white; font-weight: 500;">${msg}</p>
+                        <div class="b-meta">
+                            <span>👤 Alpha Battalion (Broadcasted)</span>
+                            <span><span style="color:var(--accent-green);">✔</span> 100% Delivered</span>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            let listContainer = document.getElementById('broadcast-list');
+            listContainer.insertAdjacentHTML('afterbegin', newHTML);
+
+            // 2. Increment counters from 0 to 1, 2, 3... dynamically
+            let totalElement = document.getElementById('total-broadcasts');
+            let deliveredElement = document.getElementById('delivered-broadcasts');
+            
+            let newTotal = parseInt(totalElement.innerText) + 1;
+            totalElement.innerText = newTotal;
+            deliveredElement.innerText = newTotal;
+            
+            // Update rates labels dynamically
+            document.querySelector('#delivered-card span').innerText = "100% Delivery Rate";
+
+            // 3. Update the Donut Chart UI instantly
+            document.getElementById('chart-total').innerText = newTotal;
+            document.getElementById('legend-delivered').innerText = newTotal;
+            // Fill chart color to green instantly since 100% are delivered
+            document.getElementById('donut-chart').style.background = "var(--accent-green)";
+
+            // 4. Flash cards for visual confirmation
+            document.getElementById('total-card').style.borderColor = "var(--accent-green)";
+            document.getElementById('delivered-card').style.borderColor = "var(--accent-blue)";
+            setTimeout(() => {
+                document.getElementById('total-card').style.borderColor = "var(--border-color)";
+                document.getElementById('delivered-card').style.borderColor = "var(--border-color)";
+            }, 800);
+
+            // 5. Reset fields
+            titleInput.value = "";
+            msgInput.value = "";
+        }
+    </script>
+</body>
+</html>

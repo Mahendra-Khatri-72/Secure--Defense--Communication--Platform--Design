@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Channels - Realistic Static UI</title>
+    <style>
+        /* WhatsApp Dark Mode Exact Colors */
+        :root {
+            --wa-bg-body: #0a1014; --wa-bg-app: #111b21; --wa-bg-header: #202c33; 
+            --wa-bg-chat: #0b141a; --wa-bg-hover: #2a3942; --wa-bg-search: #202c33; 
+            --wa-text-primary: #e9edef; --wa-text-secondary: #8696a0; 
+            --wa-green: #00a884; --wa-blue-tick: #53bdeb; --wa-border: #222d34;
+            --wa-msg-in: #202c33; --wa-msg-out: #005c4b;
+        }
+
+        body { 
+            margin: 0; background-color: var(--wa-bg-body); 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex; justify-content: center; height: 100vh; overflow: hidden;
+        }
+
+        .app-container {
+            width: 100%; max-width: 450px; background-color: var(--wa-bg-app);
+            height: 100vh; border-left: 1px solid var(--wa-border); border-right: 1px solid var(--wa-border);
+            display: flex; flex-direction: column; position: relative; overflow: hidden;
+        }
+
+        /* === HEADER === */
+        .header { display: flex; align-items: center; padding: 10px 15px; background: var(--wa-bg-header); color: var(--wa-text-primary); height: 40px; z-index: 10; }
+        .back-btn { font-size: 1.5rem; margin-right: 15px; cursor: pointer; color: var(--wa-text-secondary); text-decoration: none; display: flex; align-items: center; }
+        .header-title h2 { margin: 0; font-size: 1.1rem; font-weight: 500; }
+
+        /* === VIEW 1: CHAT LIST === */
+        #chat-list-view { display: flex; flex-direction: column; height: 100%; width: 100%; }
+        
+        .search-container { padding: 8px 12px; background: var(--wa-bg-app); border-bottom: 1px solid var(--wa-border); }
+        .search-box { background: var(--wa-bg-search); border-radius: 8px; display: flex; align-items: center; padding: 6px 12px; }
+        .search-box input { background: transparent; border: none; outline: none; color: var(--wa-text-primary); font-size: 0.9rem; width: 100%; margin-left: 10px;}
+        
+        .chat-list { flex: 1; overflow-y: auto; }
+        .chat-item { display: flex; align-items: center; padding: 0 15px; cursor: pointer; transition: background 0.2s; }
+        .chat-item:hover { background: var(--wa-bg-hover); }
+        .avatar { width: 48px; height: 48px; border-radius: 50%; background-color: var(--wa-bg-header); margin-right: 15px; background-size: cover; flex-shrink: 0; }
+        .chat-content { flex: 1; padding: 12px 0; border-bottom: 1px solid var(--wa-border); display: flex; flex-direction: column; justify-content: center; min-width: 0; }
+        .chat-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; }
+        .chat-name { font-size: 1.05rem; color: var(--wa-text-primary); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-time { font-size: 0.75rem; color: var(--wa-text-secondary); }
+        .chat-time.unread-time { color: var(--wa-green); }
+        .chat-bottom { display: flex; justify-content: space-between; align-items: center; }
+        .msg-preview-container { display: flex; align-items: center; flex: 1; min-width: 0; margin-right: 10px;}
+        .chat-msg { font-size: 0.85rem; color: var(--wa-text-secondary); margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .chat-msg.bold-msg { color: var(--wa-text-primary); font-weight: 500; }
+        .unread-badge { background: var(--wa-green); color: var(--wa-bg-app); font-size: 0.75rem; font-weight: 500; min-width: 20px; height: 20px; display: flex; justify-content: center; align-items: center; border-radius: 10px; padding: 0 5px; }
+
+        /* === VIEW 2: CHAT ROOM === */
+        #chat-room-view { display: none; flex-direction: column; height: 100%; width: 100%; background: var(--wa-bg-chat); position: absolute; top: 0; left: 0; z-index: 20; }
+        .chat-room-header { background: var(--wa-bg-header); display: flex; align-items: center; padding: 10px 15px; border-bottom: 1px solid var(--wa-border); }
+        .chat-room-header .avatar { width: 40px; height: 40px; margin-right: 12px; }
+        .chat-area { flex: 1; padding: 20px; overflow-y: auto; background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png'); background-size: cover; background-blend-mode: overlay; background-color: rgba(11, 20, 26, 0.9); display: flex; flex-direction: column; gap: 10px;}
+        
+        .message { max-width: 75%; padding: 8px 12px; border-radius: 8px; font-size: 0.9rem; color: var(--wa-text-primary); position: relative; word-wrap: break-word;}
+        .msg-in { background: var(--wa-msg-in); align-self: flex-start; border-top-left-radius: 0; }
+        .msg-out { background: var(--wa-msg-out); align-self: flex-end; border-top-right-radius: 0; }
+        .msg-time { font-size: 0.65rem; color: rgba(255,255,255,0.6); float: right; margin: 10px 0 -5px 10px; }
+
+        /* === NEW: WHATSAPP STYLE INPUT AREA === */
+        .input-area { background: var(--wa-bg-app); padding: 10px; display: flex; align-items: center; gap: 8px; }
+        .input-wrapper { flex: 1; background: var(--wa-bg-search); border-radius: 24px; display: flex; align-items: center; padding: 5px 12px; }
+        
+        /* Attachment & Camera Icons */
+        .icon-btn { color: var(--wa-text-secondary); font-size: 1.3rem; cursor: pointer; padding: 5px; transition: color 0.2s; display: flex; align-items: center; justify-content: center;}
+        .icon-btn:hover { color: var(--wa-text-primary); }
+        
+        .input-wrapper input { flex: 1; background: transparent; border: none; padding: 8px 10px; color: var(--wa-text-primary); font-size: 0.95rem; outline: none; }
+        .input-wrapper input::placeholder { color: var(--wa-text-secondary); }
+        
+        .send-btn { background: var(--wa-green); color: var(--wa-bg-app); border: none; width: 42px; height: 42px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-size: 1.2rem; margin-left: 2px;}
+
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- ================= VIEW 1: CHAT LIST ================= -->
+        <div id="chat-list-view">
+            <div class="header">
+                <a href="dashboard.html" class="back-btn">←</a>
+                <div class="header-title"><h2>Family Channels</h2></div>
+            </div>
+
+            <div class="search-container">
+                <div class="search-box">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Search or start new chat">
+                </div>
+            </div>
+
+            <div class="chat-list">
+                <!-- Chat 1: Neha (Static Unread State) -->
+                <div class="chat-item" onclick="openChat('Neha Sharma (Wife) ❤️', 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png')">
+                    <div class="avatar" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png');"></div>
+                    <div class="chat-content">
+                        <div class="chat-top">
+                            <p class="chat-name">Neha Sharma (Wife) ❤️</p>
+                            <span class="chat-time unread-time" id="neha-time">10:42 AM</span>
+                        </div>
+                        <div class="chat-bottom">
+                            <div class="msg-preview-container">
+                                <p class="chat-msg bold-msg" id="neha-preview">Miss you! Call when free.</p>
+                            </div>
+                            <span class="unread-badge" id="neha-badge">1</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat 2: Papa (Static Read State) -->
+                <div class="chat-item" onclick="openChat('Papa', 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png')">
+                    <div class="avatar" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png');"></div>
+                    <div class="chat-content">
+                        <div class="chat-top"><p class="chat-name">Papa</p><span class="chat-time">Yesterday</span></div>
+                        <div class="chat-bottom"><div class="msg-preview-container"><span style="color:var(--wa-blue-tick);">✓✓ </span><p class="chat-msg">Dhyan rakhna beta.</p></div></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ================= VIEW 2: CHAT ROOM ================= -->
+        <div id="chat-room-view">
+            <div class="chat-room-header">
+                <span class="back-btn" onclick="closeChat()">←</span>
+                <div class="avatar" id="active-chat-avatar" style="background-image: url('');"></div>
+                <div class="header-title"><h2 id="active-chat-name">Name</h2></div>
+            </div>
+
+            <div class="chat-area" id="chat-messages">
+                <!-- Messages will load here -->
+            </div>
+
+            <!-- THE NEW WHATSAPP STYLE INPUT AREA -->
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <!-- Attachment / Photo Button -->
+                    <span class="icon-btn" title="Attach File" onclick="alert('Photo/File picker will open here.')">📎</span>
+                    
+                    <!-- Text Box -->
+                    <input type="text" id="message-input" placeholder="Message" onkeypress="handleKeyPress(event)">
+                    
+                    <!-- Camera Button -->
+                    <span class="icon-btn" title="Camera" onclick="alert('Camera will open here.')">📷</span>
+                </div>
+                
+                <!-- Send Button -->
+                <button class="send-btn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- === JAVASCRIPT === -->
+    <script>
+        let currentChatName = "";
+
+        function openChat(name, avatarUrl) {
+            currentChatName = name;
+            
+            // Switch Views
+            document.getElementById('chat-list-view').style.display = 'none';
+            document.getElementById('chat-room-view').style.display = 'flex';
+            
+            // Set Header Name and Photo
+            document.getElementById('active-chat-name').innerText = name;
+            document.getElementById('active-chat-avatar').style.backgroundImage = `url('${avatarUrl}')`;
+
+            // Load Chat History
+            let chatBox = document.getElementById('chat-messages');
+            
+            if(name.includes("Neha")) {
+                // Remove unread badge when chat is opened
+                document.getElementById('neha-preview').classList.remove('bold-msg');
+                document.getElementById('neha-time').classList.remove('unread-time');
+                document.getElementById('neha-badge').style.display = 'none';
+
+                chatBox.innerHTML = `
+                    <div class="message msg-in">Sab theek hai. Duty kaisi chal rahi hai?<span class="msg-time">Yesterday</span></div>
+                    <div class="message msg-out">All good here! Thoda busy tha.<span class="msg-time">Yesterday</span></div>
+                    <div class="message msg-in">Miss you! Call when free.<span class="msg-time">10:42 AM</span></div>
+                `;
+            } else {
+                chatBox.innerHTML = `
+                    <div class="message msg-in">Dhyan rakhna beta.<span class="msg-time">Yesterday</span></div>
+                `;
+            }
+        }
+
+        function closeChat() {
+            document.getElementById('chat-room-view').style.display = 'none';
+            document.getElementById('chat-list-view').style.display = 'flex';
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById('message-input');
+            let text = inputField.value.trim();
+            
+            if (text !== "") {
+                let chatBox = document.getElementById('chat-messages');
+                let now = new Date();
+                let timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+                // Add message to screen
+                chatBox.innerHTML += `<div class="message msg-out">${text}<span class="msg-time">${timeString} ✓</span></div>`;
+                
+                // Auto scroll to latest message
+                chatBox.scrollTop = chatBox.scrollHeight;
+                
+                // Update preview in list
+                if(currentChatName.includes("Neha")) {
+                    document.getElementById('neha-preview').innerText = "✓ " + text;
+                    document.getElementById('neha-time').innerText = timeString;
+                }
+
+                // Clear text box
+                inputField.value = "";
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+    </script>
+</body>
+</html>

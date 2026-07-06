@@ -1,0 +1,148 @@
+/* === BASE STYLES & VARIABLES === */
+:root {
+    --bg-main: #06080c;
+    --bg-card: #0d1117;
+    --text-white: #ffffff;
+    --text-gray: #8b949e;
+    --border-color: #21262d;
+    
+    --accent-green: #4caf50;
+    --accent-orange: #ff9800;
+    --accent-blue: #2196f3;
+    --accent-red: #f44336;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg-main);
+    color: var(--text-white);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    padding-bottom: 80px; /* Space for bottom nav */
+}
+
+/* App Container (To keep it looking like a mobile app even on PC) */
+.app-container {
+    max-width: 480px;
+    margin: 0 auto;
+    background-color: var(--bg-main);
+    min-height: 100vh;
+    position: relative;
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+}
+
+/* === HEADER === */
+.top-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background-color: var(--bg-main);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.menu-icon { font-size: 1.5rem; color: var(--text-gray); cursor: pointer; }
+.header-logo { width: 30px; height: 35px; background: url('https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg') no-repeat center; background-size: contain; filter: drop-shadow(0px 0px 2px rgba(255, 200, 0, 0.4));}
+.header-title-box { display: flex; align-items: flex-start; gap: 5px; }
+.header-title { font-size: 0.65rem; font-weight: bold; line-height: 1.3; letter-spacing: 0.5px; color: var(--text-gray); }
+.header-title span { color: var(--text-white); }
+.status-dot-small { width: 6px; height: 6px; background-color: var(--accent-green); border-radius: 50%; margin-top: 3px; box-shadow: 0 0 5px var(--accent-green);}
+.header-icons { display: flex; gap: 15px; font-size: 1.2rem; align-items: center;}
+.icon-wrapper { position: relative; }
+.badge { position: absolute; top: -4px; right: -4px; background: var(--accent-red); color: white; font-size: 0.5rem; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold;}
+.badge-green { background: var(--accent-green); width: 8px; height: 8px; right: 0; top: 12px; border: 2px solid var(--bg-main);}
+
+/* === MAIN PADDING === */
+.content-padding { padding: 0 20px; }
+
+/* === PROFILE CARD === */
+.profile-card {
+    background: linear-gradient(135deg, #112016 0%, #0a120c 100%);
+    border: 1px solid #0D1117 ;
+    border-radius: 12px;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 25px;
+}
+.profile-left { display: flex; align-items: center; gap: 15px; }
+.profile-pic {
+    width: 55px; height: 55px; border-radius: 50%;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png');
+    background-size: cover; border: 2px solid var(--accent-green);
+    position: relative;
+}
+.profile-status { position: absolute; bottom: 0; right: 0; width: 12px; height: 12px; background: var(--accent-green); border-radius: 50%; border: 2px solid #112016; }
+.profile-info h4 { margin: 0 0 2px 0; font-size: 0.7rem; color: var(--text-gray); font-weight: normal; }
+.profile-info h2 { margin: 0 0 4px 0; font-size: 1rem; color: var(--text-white); display: flex; align-items: center; gap: 5px;}
+.profile-info p { margin: 0; font-size: 0.65rem; color: var(--text-gray); }
+.encryption-badge { text-align: center; border-left: 1px solid rgba(255,255,255,0.05); padding-left: 15px; }
+.encryption-badge span { display: block; font-size: 1rem; margin-bottom: 3px; color: var(--accent-green);}
+.encryption-badge p { margin: 0; font-size: 0.55rem; color: var(--text-gray); }
+.encryption-badge .green-text { color: var(--accent-green); font-weight: bold;}
+
+/* === SECTION HEADERS === */
+.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.section-title { font-size: 0.7rem; font-weight: 600; color: var(--text-gray); text-transform: uppercase; display: flex; align-items: center; gap: 8px;}
+.section-title::before { content: ''; display: inline-block; width: 3px; height: 12px; background-color: var(--accent-green); border-radius: 2px;}
+.view-all { font-size: 0.7rem; color: var(--accent-green); text-decoration: none; font-weight: 500;}
+
+/* === QUICK ACTIONS === */
+.quick-actions { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+.action-btn { background-color: var(--bg-card); border-radius: 10px; padding: 12px 5px; text-align: center; border: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: center;}
+.action-btn.safe { border: 1px solid rgba(76, 175, 80, 0.3); }
+.action-btn.broadcast { border: 1px solid rgba(255, 152, 0, 0.3); }
+.action-btn.schedule { border: 1px solid rgba(33, 150, 243, 0.3); }
+.action-btn.emergency { border: 1px solid rgba(244, 67, 54, 0.3); }
+.action-icon { font-size: 1.2rem; margin-bottom: 6px; }
+.action-title { font-size: 0.65rem; font-weight: bold; margin-bottom: 3px; text-transform: uppercase;}
+.action-sub { font-size: 0.55rem; color: var(--text-gray); }
+
+/* === CHANNELS === */
+.channels-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 25px; }
+.channel-card { background-color: var(--bg-card); border-radius: 10px; padding: 12px; border: 1px solid var(--border-color); display: flex; align-items: center; gap: 10px; }
+.channel-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 0.9rem; }
+.op-icon { background: rgba(76, 175, 80, 0.1); color: var(--accent-green); }
+.fam-icon { background: rgba(33, 150, 243, 0.1); color: var(--accent-blue); }
+.channel-info h4 { margin: 0 0 2px 0; font-size: 0.7rem; }
+.channel-info p { margin: 0; font-size: 0.6rem; color: var(--text-gray); }
+.unread-green { color: var(--accent-green); font-weight: bold; }
+.unread-blue { color: var(--accent-blue); font-weight: bold; }
+
+/* === RECENT MESSAGES === */
+.message-list { display: flex; flex-direction: column; gap: 0; margin-bottom: 25px; background: var(--bg-card); border-radius: 12px; border: 1px solid var(--border-color); padding: 5px 15px;}
+.msg-item { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid var(--border-color); }
+.msg-item:last-child { border-bottom: none; }
+.msg-left { display: flex; align-items: center; gap: 12px; flex: 1; overflow: hidden;}
+.msg-avatar { width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1rem; flex-shrink: 0;}
+.msg-avatar.alpha { background: rgba(255, 152, 0, 0.1); color: var(--accent-orange); }
+.msg-avatar.family { background: rgba(33, 150, 243, 0.1); color: var(--accent-blue); }
+.msg-avatar.welfare { background: rgba(76, 175, 80, 0.1); color: var(--accent-green); }
+.msg-content { overflow: hidden; }
+.msg-content h4 { margin: 0 0 3px 0; font-size: 0.8rem; }
+.msg-content p { margin: 0; font-size: 0.7rem; color: var(--text-gray); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-right { text-align: right; flex-shrink: 0;}
+.msg-time { display: block; font-size: 0.6rem; color: var(--text-gray); margin-bottom: 5px; }
+.msg-count { background: var(--accent-green); color: var(--bg-main); font-size: 0.6rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: inline-block;}
+
+/* === STATUS OVERVIEW === */
+.status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 20px; }
+.status-box { background: var(--bg-card); padding: 12px 5px; border-radius: 10px; border: 1px solid var(--border-color); text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;}
+.status-header { display: flex; align-items: center; justify-content: center; gap: 5px; font-size: 0.55rem; color: var(--accent-green); margin-bottom: 6px; text-transform: uppercase; font-weight: bold;}
+.status-header.gray-icon { color: var(--text-gray); }
+.status-val { font-size: 0.75rem; font-weight: 600; color: var(--text-white); margin: 0 0 2px 0; }
+.status-sub { font-size: 0.6rem; color: var(--text-gray); margin: 0; display: flex; align-items: center; gap: 3px; justify-content: center;}
+.dot-green { width: 6px; height: 6px; background: var(--accent-green); border-radius: 50%; display: inline-block;}
+
+/* === BOTTOM NAV === */
+.bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; display: flex; justify-content: center; z-index: 1000; pointer-events: none;}
+.bottom-nav-inner { width: 100%; max-width: 480px; background: var(--bg-main); display: flex; justify-content: space-around; padding: 10px 0 20px 0; border-top: 1px solid var(--border-color); pointer-events: auto;}
+.nav-item { text-align: center; font-size: 0.65rem; color: var(--text-gray); cursor: pointer; flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; position: relative;}
+.nav-item.active { color: var(--accent-green); }
+.nav-icon { font-size: 1.2rem; }
+.nav-badge { position: absolute; top: -5px; right: calc(50% - 15px); background: var(--accent-red); color: white; font-size: 0.5rem; padding: 1px 5px; border-radius: 10px; font-weight: bold;}

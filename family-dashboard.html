@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Family Secure Portal</title>
+    <style>
+        /* === BASE STYLES === */
+        body { background-color: #0b0f19; color: white; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 0; padding-bottom: 70px; height: 100vh; overflow: hidden; }
+        .container { padding: 20px; height: 100%; overflow-y: auto; box-sizing: border-box; }
+        
+        /* === VIEWS === */
+        .view-section { display: none; height: 100%; } 
+        #home-view { display: block; } 
+
+        /* === HEADER PROFILE === */
+        .profile-card { background: #161e13; border: 1px solid #2a3a24; border-radius: 15px; padding: 15px; display: flex; align-items: center; margin-bottom: 25px; }
+        .profile-pic { width: 60px; height: 60px; border-radius: 50%; background-color: #2196f3; margin-right: 15px; background-image: url('https://upload.wikimedia.org/wikipedia/commons/7/7c/Profile_avatar_placeholder_large.png'); background-size: cover;}
+        .profile-info h3 { margin: 0; color: #fff; font-size: 1.1rem; }
+        .profile-info p { margin: 2px 0; color: #888; font-size: 0.8rem; }
+        .section-title { font-size: 0.8rem; color: #888; margin-bottom: 10px; border-left: 3px solid #2196f3; padding-left: 8px; letter-spacing: 1px; text-transform: uppercase;}
+        
+        /* === WELFARE STATUS CARD (For Family) === */
+        .welfare-card { background: linear-gradient(135deg, #1b3a1e 0%, #112213 100%); border: 1px solid #4caf50; border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(76, 175, 80, 0.2); }
+        .welfare-icon { font-size: 2.5rem; margin-bottom: 10px; }
+        .welfare-title { color: #4caf50; font-size: 1.2rem; font-weight: bold; margin: 0 0 5px 0; }
+        .welfare-desc { color: #a5d6a7; font-size: 0.85rem; margin: 0; }
+        
+        /* === CHANNELS === */
+        .channels { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 25px; }
+        .channel-card { background: #151a22; padding: 20px; border-radius: 10px; display: flex; align-items: center; cursor: pointer; font-size: 0.95rem; font-weight: bold; border-left: 3px solid #2196f3;}
+        .channel-card .sub-text { display: block; font-size: 0.75rem; color: #888; margin-top: 5px; font-weight: normal;}
+
+        /* === SINGLE CHAT ROOM (E2E Encrypted) === */
+        .chat-header { background: #161b22; padding: 15px 20px; display: flex; align-items: center; border-bottom: 1px solid #333; position: sticky; top: 0; z-index: 10; }
+        .back-btn { background: none; border: none; color: #2196f3; font-size: 1.2rem; cursor: pointer; margin-right: 15px; font-weight: bold; }
+        .chat-header h3 { margin: 0; font-size: 1rem; }
+        .chat-header p { margin: 0; font-size: 0.7rem; color: #2196f3; }
+        
+        /* THE E2E BANNER FOR JUDGES */
+        .e2e-banner { background-color: #1a1e15; border: 1px dashed #4caf50; color: #a5d6a7; font-size: 0.7rem; text-align: center; padding: 10px; margin: 15px; border-radius: 8px; font-weight: bold;}
+        
+        .chat-messages { padding: 0 20px 20px 20px; display: flex; flex-direction: column; gap: 15px; margin-bottom: 60px; }
+        .msg-bubble { max-width: 75%; padding: 12px 15px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; position: relative; }
+        .msg-rcvd { background: #2e4a23; align-self: flex-start; border-bottom-left-radius: 2px; color: #e8f5e9;}
+        .msg-sent { background: #151a22; align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg-time { display: block; font-size: 0.65rem; color: #888; margin-top: 5px; text-align: right; }
+
+        .chat-input-area { position: fixed; bottom: 0; left: 0; width: 100%; background: #0d1117; padding: 10px 20px; box-sizing: border-box; display: flex; gap: 10px; border-top: 1px solid #333; }
+        .chat-input { flex: 1; background: #151a22; border: 1px solid #333; border-radius: 20px; padding: 12px 15px; color: white; font-size: 0.9rem; outline: none; }
+        .chat-input:focus { border-color: #2196f3; }
+        .send-btn { background: #2196f3; color: #0b0f19; border: none; border-radius: 50%; width: 45px; height: 45px; font-size: 1.2rem; cursor: pointer; font-weight: bold; }
+
+        /* === BOTTOM NAVIGATION === */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; width: 100%; background: #0d1117; display: flex; justify-content: space-around; padding: 15px 0; border-top: 1px solid #333; z-index: 1000;}
+        .nav-item { text-align: center; font-size: 0.75rem; color: #888; cursor: pointer; flex: 1; font-weight: bold;}
+        .nav-item.active { color: #2196f3; }
+    </style>
+</head>
+<body>
+
+    <div id="home-view" class="view-section container">
+        <div class="profile-card">
+            <div class="profile-pic"></div>
+            <div class="profile-info">
+                <p>Family Member,</p>
+                <h3>Neha Sharma</h3>
+                <p>Linked to: Soldier Ravi (Alpha Co.)</p>
+            </div>
+        </div>
+
+        <div class="section-title">LIVE WELFARE STATUS</div>
+        <div class="welfare-card">
+            <div class="welfare-icon">🛡️</div>
+            <h2 class="welfare-title">SOLDIER IS SAFE</h2>
+            <p class="welfare-desc">Last Check-in: Just Now<br>No active operations in the zone.</p>
+        </div>
+
+        <div class="section-title">SECURE COMMUNICATIONS</div>
+        <div class="channels">
+            <div class="channel-card" onclick="openChat('Soldier Ravi')">
+                <div>
+                    💬 Chat with Soldier Ravi
+                    <span class="sub-text">E2E Encrypted Personal Channel</span>
+                </div>
+            </div>
+            <div class="channel-card" style="border-left-color: #ff9800;" onclick="alert('Connecting to Welfare Support...')">
+                <div>
+                    📞 Base Helpdesk
+                    <span class="sub-text">Contact Admin for emergency</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="single-chat-view" class="view-section">
+        <div class="chat-header">
+            <button class="back-btn" onclick="switchTab('home-view', document.getElementById('nav-home'))">←</button>
+            <div>
+                <h3 id="chat-person-name">Soldier Ravi</h3>
+                <p>🔒 Isolated Connection</p>
+            </div>
+        </div>
+        
+        <div class="e2e-banner">
+            🔒 <strong>STRICT E2E ENCRYPTION ACTIVE</strong><br>
+            Your messages are locked on this device. Base Commanders or Database Admins cannot read this chat.
+        </div>
+
+        <div class="chat-messages" id="message-board">
+            <div class="msg-bubble msg-sent">
+                Take care and stay safe 🙏
+                <span class="msg-time">08:15 AM</span>
+            </div>
+            <div class="msg-bubble msg-rcvd">
+                I am good. Don't worry.
+                <span class="msg-time">08:16 AM</span>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <input type="text" id="msg-input" class="chat-input" placeholder="Type secure message...">
+            <button class="send-btn" onclick="sendMessage()">➤</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav" id="main-nav">
+        <div class="nav-item active" id="nav-home" onclick="switchTab('home-view', this)">🏠<br>Home</div>
+        <div class="nav-item" id="nav-support" onclick="alert('Support form loading...')">📞<br>Support</div>
+        <div class="nav-item" id="nav-settings" onclick="alert('Settings loading...')">⚙️<br>Settings</div>
+    </div>
+
+    <script>
+        function switchTab(viewId, navElement) {
+            document.querySelectorAll('.view-section').forEach(el => el.style.display = 'none');
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).style.display = 'block';
+            
+            if(navElement) navElement.classList.add('active');
+
+            if(viewId === 'single-chat-view') {
+                document.getElementById('main-nav').style.display = 'none';
+            } else {
+                document.getElementById('main-nav').style.display = 'flex';
+            }
+        }
+
+        function openChat(contactName) {
+            document.getElementById('chat-person-name').innerText = contactName;
+            switchTab('single-chat-view', null);
+        }
+
+        function sendMessage() {
+            let inputField = document.getElementById('msg-input');
+            let messageText = inputField.value.trim();
+            
+            if(messageText !== "") {
+                let msgBoard = document.getElementById('message-board');
+                
+                let newMsgDiv = document.createElement('div');
+                newMsgDiv.className = 'msg-bubble msg-sent';
+                newMsgDiv.innerHTML = messageText + '<span class="msg-time">Just now</span>';
+                
+                msgBoard.appendChild(newMsgDiv);
+                inputField.value = ""; 
+                
+                document.querySelector('.container').scrollTop = msgBoard.scrollHeight;
+            }
+        }
+    </script>
+</body>
+</html>

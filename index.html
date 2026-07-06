@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Login - Communication Platform</title>
+    <style>
+        /* === BASE COLORS & SETUP === */
+        :root {
+            --bg-dark: #0b0f19;
+            --bg-card: #121820;
+            --text-main: #ffffff;
+            --text-muted: #8b949e;
+            --border-color: #21262d;
+            --accent-green: #4caf50;
+            --accent-orange: #ff9800;
+        }
+
+        body { 
+            margin: 0; padding: 0; 
+            background-color: var(--bg-dark); 
+            color: var(--text-main); 
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
+            display: flex; justify-content: center; align-items: center; 
+            height: 100vh;
+        }
+
+        /* === LOGIN CARD === */
+        .login-card {
+            background: var(--bg-card);
+            width: 320px;
+            padding: 30px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* === HEADER === */
+        .header { text-align: center; margin-bottom: 20px; }
+        .logo-img { width: 35px; margin-bottom: 5px; filter: drop-shadow(0px 0px 2px rgba(255, 200, 0, 0.5));}
+        .mod-title { color: var(--accent-orange); font-size: 0.65rem; font-weight: bold; margin: 0; text-transform: uppercase; letter-spacing: 1px;}
+        .scg-title { color: var(--accent-green); font-size: 0.9rem; font-weight: bold; margin: 3px 0; text-transform: uppercase;}
+        .cp-title { color: white; font-size: 0.65rem; margin: 0; text-transform: uppercase; letter-spacing: 0.5px;}
+
+        /* === STATUS BAR === */
+        .status-bar { display: flex; justify-content: space-between; border-bottom: 1px solid var(--border-color); padding-bottom: 15px; margin-bottom: 20px; }
+        .status-label { font-size: 0.55rem; color: var(--text-muted); text-transform: uppercase;}
+        .status-val-green { font-size: 0.75rem; color: var(--accent-green); font-weight: bold; display: block; margin-top: 3px;}
+        .status-val-white { font-size: 0.75rem; color: white; font-weight: bold; display: block; margin-top: 3px; text-align: right;}
+
+        /* === FORM INPUT === */
+        .input-group { margin-bottom: 20px; }
+        .label { font-size: 0.6rem; color: var(--text-muted); margin-bottom: 8px; display: block; text-transform: uppercase;}
+        
+        .input-box { 
+            width: 100%; background: #1a2332; border: 1px solid var(--border-color); 
+            color: white; padding: 12px; border-radius: 6px; box-sizing: border-box; 
+            font-size: 0.9rem; outline: none; font-family: inherit; margin-bottom: 5px;
+        }
+        .input-box:focus { border-color: var(--accent-green); box-shadow: 0 0 5px rgba(76, 175, 80, 0.2);}
+        
+        .subtext { font-size: 0.55rem; color: var(--text-muted); }
+
+        /* === DIVIDERS === */
+        .divider { display: flex; align-items: center; text-align: center; color: var(--text-muted); font-size: 0.6rem; margin: 20px 0; }
+        .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border-color); }
+        .divider:not(:empty)::before { margin-right: .5em; }
+        .divider:not(:empty)::after { margin-left: .5em; }
+
+        /* === BIOMETRIC === */
+        .bio-section { text-align: center; }
+        .bio-icon-box { 
+            width: 55px; height: 55px; border: 2px solid var(--accent-green); 
+            border-radius: 12px; display: inline-flex; justify-content: center; 
+            align-items: center; margin-bottom: 10px; cursor: pointer;
+            background: rgba(76, 175, 80, 0.05); transition: 0.3s;
+        }
+        .bio-icon-box:hover { background: rgba(76, 175, 80, 0.15); }
+        .bio-icon { font-size: 1.5rem; color: var(--accent-green); }
+        .bio-text { color: var(--accent-green); font-size: 0.7rem; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 5px;}
+
+        /* === BUTTON === */
+        .btn-login { 
+            width: 100%; background: #1a2332; color: white; border: 1px solid var(--border-color); 
+            padding: 15px 20px; border-radius: 6px; display: flex; justify-content: space-between; 
+            align-items: center; cursor: pointer; font-size: 0.75rem; font-weight: bold; 
+            transition: 0.3s; box-sizing: border-box;
+        }
+        .btn-login:hover { background: #212d40; border-color: var(--text-muted); }
+        .btn-lock { color: var(--accent-orange); margin-right: 8px;}
+    </style>
+</head>
+<body>
+
+    <div class="login-card">
+        
+        <div class="header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/55/Emblem_of_India.svg" class="logo-img" alt="Logo">
+            <p class="mod-title">Ministry of Defence</p>
+            <p class="scg-title">Secure Closed Group</p>
+            <p class="cp-title">Communication Platform</p>
+        </div>
+
+        <div class="status-bar">
+            <div>
+                <span class="status-label">Secure Connection</span>
+                <span class="status-val-green">End-to-End Encrypted</span>
+            </div>
+            <div>
+                <span class="status-label" style="text-align: right;">Network Status</span>
+                <span class="status-val-white">📶 STRONG</span>
+            </div>
+        </div>
+
+        <div class="input-group">
+            <label class="label">Service Number</label>
+            <input type="text" id="usernameInput" class="input-box" placeholder="Enter ID..." autocomplete="off">
+            <span class="subtext">Your service number is your unique identity</span>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <div class="bio-section">
+            <label class="label" style="margin-bottom: 12px;">Biometric Authentication</label>
+            <div class="bio-icon-box" onclick="alert('Biometric scanner activated. Scanning...')">
+                <div class="bio-icon">🖩</div> </div>
+            <div class="bio-text"><span>✔</span> Biometric Available</div>
+        </div>
+
+        <div class="divider">OR</div>
+
+        <button class="btn-login" onclick="loginUser()">
+            <div><span class="btn-lock">🔒</span> SECURE LOGIN</div>
+            <div>></div>
+        </button>
+
+    </div>
+
+ <script>
+      function loginUser() {
+            let inputField = document.getElementById("usernameInput");
+            let enteredName = inputField ? inputField.value.trim() : ""; 
+
+            // Agar box khali hai
+            if (enteredName === "") {
+                alert("❌ ERROR: Please enter your Service ID or Name.");
+                return;
+            }
+
+            // ROUTE 1: Agar Soldier khud login kare
+            if (enteredName === "SoldierRavi") {
+                alert("✅ Authentication Successful! Welcome Commander.");
+                window.location.href = "dashboard.html"; // Jata hai Soldier ke page par
+            } 
+            
+            // ROUTE 2: Agar Family Member (Wife) login kare
+            else if (enteredName === "FamilyNeha") {
+                alert("✅ Family Authentication Successful! Welcome Neha.");
+                window.location.href = "family-dashboard.html"; // Jata hai Wife ke page par
+            }
+
+            // ROUTE 3: Agar ID dono mein se koi nahi hai (Galat ID)
+            else {
+                alert("🚨 ACCESS DENIED!\nUnauthorized ID detected: [" + enteredName + "]");
+                
+                if(inputField) {
+                    inputField.value = ""; 
+                }
+            }
+        }
+    </script>
+    </script>
+</body>
+</html>

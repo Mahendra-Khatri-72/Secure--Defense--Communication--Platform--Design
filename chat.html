@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Secure Chat</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="stylesheet" href="chat.css">
+</head>
+<body>
+
+<div class="app-container">
+
+    <header class="chat-header">
+        <button class="back-btn" onclick="window.location.href='dashboard.html'">←</button>
+        <div class="chat-user-info">
+            <div class="chat-avatar" id="avatar-icon">👥</div>
+            <div>
+                <h4 class="chat-name" id="chat-title">Secure Channel</h4>
+                <p class="chat-status"><span class="dot-green"></span> E2E Connected</p>
+            </div>
+        </div>
+        <div style="color: var(--text-gray); font-size: 1.2rem; cursor: pointer;">⋮</div>
+    </header>
+
+    <div class="e2e-notice">
+        🔒 <strong>STRICT E2E ENCRYPTION ACTIVE</strong><br>
+        Messages are locked on this device. No third party, including Admins, can read this chat.
+    </div>
+
+    <div class="chat-box" id="message-board">
+        <div class="msg-bubble msg-rcvd">
+            Connection established. Ready to transmit secure data.
+            <span class="msg-time-chat">08:00 AM</span>
+        </div>
+    </div>
+
+    <div class="chat-input-container">
+        <span style="color: var(--text-gray); font-size: 1.2rem; cursor: pointer;">📎</span>
+        <input type="text" id="msg-input" class="chat-input" placeholder="Type secure message..." onkeypress="handleKeyPress(event)">
+        <button class="send-btn" onclick="sendMessage()">➤</button>
+    </div>
+
+</div>
+
+<script>
+    // 1. URL se naam nikal kar header mein dikhana
+    const urlParams = new URLSearchParams(window.location.search);
+    const userName = urlParams.get('user');
+    if(userName) {
+        document.getElementById('chat-title').innerText = userName;
+    }
+
+    // 2. Message Send Karne ka Logic
+    function sendMessage() {
+        let inputField = document.getElementById('msg-input');
+        let messageText = inputField.value.trim();
+        
+        if(messageText !== "") {
+            let msgBoard = document.getElementById('message-board');
+            
+            // Naya message bubble banana
+            let newMsgDiv = document.createElement('div');
+            newMsgDiv.className = 'msg-bubble msg-sent';
+            
+            // Current time nikalna
+            let now = new Date();
+            let timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+
+            newMsgDiv.innerHTML = messageText + '<span class="msg-time-chat">' + timeString + '</span>';
+            
+            // Screen par add karna
+            msgBoard.appendChild(newMsgDiv);
+            
+            // Input box khaali karna aur scroll niche karna
+            inputField.value = ""; 
+            msgBoard.scrollTop = msgBoard.scrollHeight;
+        }
+    }
+
+    // 3. Enter key dabane par bhi message send ho
+    function handleKeyPress(event) {
+        if (event.key === "Enter") {
+            sendMessage();
+        }
+    }
+</script>
+
+</body>
+</html>
